@@ -1,0 +1,23 @@
+{
+    "Timestamp":"",
+    "Id":"ACBAED32A7B0",
+    "PZEM":[
+        {
+            "Id":10,
+            "Current":2.083,
+            "Power":471.6,
+            "Energy":80.706
+        },
+        {   
+            "Id":0,
+            "Current":0,
+            "Power":0,
+            "Energy":0
+        },
+        {   "Id":0,
+            "Current":0,
+            "Power":0,
+            "Energy":0
+        }
+    ]
+}
