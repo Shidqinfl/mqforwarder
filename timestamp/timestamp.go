@@ -14,5 +14,5 @@ func GetTime() (timestamp string) {
 	return timestamp
 }
 func Delay(t time.Duration) {
-	time.Sleep(t * time.Minute)
+	time.Sleep(t * time.Millisecond)
 }

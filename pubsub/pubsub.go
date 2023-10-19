@@ -4,6 +4,7 @@ import (
 	// "os"
 	// "os/signal"
 	// "syscall"
+
 	printd "mqforwarder/debug"
 	"time"
 
@@ -81,7 +82,8 @@ func Publish_Data(tops string, message interface{}) (err error) {
 		printd.Debug(3, "Failed to Publish")
 	} else {
 		// log.Println("[published to topic ", tops, " ]")
-		printd.Debug(2, "Published to topic " + tops)
+		printd.Debug(2, "Published to topic "+tops)
+		// fmt.Println(message)
 
 	}
 

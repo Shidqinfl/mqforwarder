@@ -1,23 +1,19 @@
 package domain
 
-type Recti_Data struct {
+type AllCells struct {
 	Timestamp string
-	Id        string
-	PZEM      []Pzem
+	Dev_ID    string
+	Cells     []Cell
 }
-type Pzem struct {
+type Cell struct {
 	Id      uint8
-	Current float32
-	Power   float32
-	Energy  float32
+	Voltage float64
+	Temp    float64
+	Liquid  uint8
 }
-type PM_data struct {
-	Id   string
-	Data []Data
-}
-type Data struct {
-	Id      uint8
-	Current float32
-	Power   float32
-	Energy  float32
+type Summary struct {
+	Dev_ID        string
+	Timestamp     string
+	Total_Cell    uint8
+	Total_Voltage float32
 }
