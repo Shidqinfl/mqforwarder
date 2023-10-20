@@ -13,6 +13,11 @@ func GetTime() (timestamp string) {
 	timestamp = fmt.Sprint(timestamp,  tm.Year(), "-", uint16(tm.Month()),"-", tm.Day(),"T", tm.Hour(),":", tm.Minute(),":", tm.Second(),"+07:00")
 	return timestamp
 }
+func GetSec()int{
+	tm := time.Now()
+	sec := tm.Second()
+	return sec
+}
 func Delay(t time.Duration) {
 	time.Sleep(t * time.Millisecond)
 }
