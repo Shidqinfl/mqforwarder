@@ -6,6 +6,7 @@ import (
 	"fmt"
 	data "mqforwarder/converter"
 	printd "mqforwarder/debug"
+	"mqforwarder/domain"
 	dom "mqforwarder/domain"
 	pubsub "mqforwarder/pubsub"
 	tme "mqforwarder/timestamp"
@@ -17,8 +18,9 @@ var (
 	summvolt     float64
 	cfinal       [86]dom.Cell
 	cell_null    uint
-	listCellNull []uint
-	listCellOn   []uint
+	listCellNull [87]uint
+	cell_summary domain.Summary
+	c_sum        []byte
 )
 
 func main() {
@@ -26,7 +28,7 @@ func main() {
 	mtopic := "pln_bms/110/v2/gejayan/"
 
 	Topic_sub := flag.String("TS", mtopic+"285865A4AE30/cells", "Insert topic for subscribe") //
-	Topic_pub := flag.String("TP", mtopic+"PC_NFL/cells", "Insert topic for publish")
+	Topic_pub := flag.String("TP", mtopic+"PC_NFL", "Insert topic for publish")
 	MQ_Port := flag.String("P", "2883", "Insert MQTT port")
 	flag.Parse()
 
@@ -35,11 +37,16 @@ func main() {
 	summcell = 0
 	summvolt = 0
 	// c:= cfinal
+	printd.Debug(1, tme.GetTime())
+	printd.Debug(2, "Processing")
 	for {
 		summcell = 0
 		summvolt = 0
 		cell_null = 0
-		printd.Debug(1, tme.GetTime())
+		for i := 1; i < 87; i++ {
+			listCellNull[i]= 0
+		}
+		
 		s, err := pubsub.Subs(*Topic_sub)
 		if err == nil {
 			// printd.Debug(2, "subs data: "+s)
@@ -62,34 +69,32 @@ func main() {
 					if (cell[i].Voltage != -1 || cell[i].Temp != -1) && cell[i].Id != 0 {
 						summcell++
 						summvolt += cell[i].Voltage
-						// c_on := append(listCellOn, uint(cell[i].Id))
-						// // fmt.Println("===============[ CELL ON ]=============")
-						// fmt.Print(c_on)
-
 					} else {
 						cell_null++
-						listCellNull := append(listCellNull, uint(cell[i].Id))
-						// if c0[i] !=0{
-						fmt.Print(listCellNull)
-						// fmt.Println("===============[ CELL OFF ]============")
-						// }
+						listCellNull[i] = uint(cell[i].Id)
 
 					}
-
 				}
+				fmt.Print(listCellNull)
 				fmt.Println("")
 				fmt.Println("==================================")
 				printd.Debug(1, "Total Cell : "+strconv.FormatUint(uint64(summcell), 10))
 				printd.Debug(1, "Total Voltage : "+strconv.FormatFloat(summvolt, 'f', -1, 32))
 				printd.Debug(1, "Not Connected Cell : "+strconv.FormatUint(uint64(cell_null), 10))
+				cell_summary.Dev_ID = "PC_QC"
+				cell_summary.Timestamp = tme.GetTime()
+				cell_summary.Total_Cell = summcell
+				cell_summary.Not_Con_Cell = uint16(cell_null)
+				cell_summary.Total_Voltage = float32(summvolt)
+				cell_summary.Not_Con_CELL_ID = listCellNull[:]
+				c_sum, _ = json.Marshal(cell_summary)
 				fmt.Println("")
 				sec := tme.GetSec()
-				if sec%10 == 0 {
-					pubsub.Publish_Data(*Topic_pub, payload)
-					pubsub.Publish_Data(*Topic_pub+"/cell_off", listCellNull)
+				if sec%30 == 0 {
+					pubsub.Publish_Data(*Topic_pub+"/cells", payload)
+					pubsub.Publish_Data(*Topic_pub+"/summ", c_sum)
 
 				}
-
 			} //else {
 			// 	printd.Debug(3, "waiting for payload")
 			// }

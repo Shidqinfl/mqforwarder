@@ -14,6 +14,8 @@ type Cell struct {
 type Summary struct {
 	Dev_ID        string
 	Timestamp     string
-	Total_Cell    uint8
 	Total_Voltage float32
+	Total_Cell    uint16
+	Not_Con_Cell uint16
+	Not_Con_CELL_ID []uint
 }
