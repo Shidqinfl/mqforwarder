@@ -16,11 +16,15 @@ import (
 var (
 	summcell     uint16
 	summvolt     float64
-	cfinal       [86]dom.Cell
+	
 	cell_null    uint
 	listCellNull [87]uint
+	listCellFill [87]uint
+	bmsxkcErr [87]uint
 	cell_summary domain.Summary
 	c_sum        []byte
+	bms_fill []dom.Cell
+	cfinal   []dom.AllCells
 )
 
 func main() {
@@ -65,16 +69,29 @@ func main() {
 					// fmt.Println("[ CELL TEMPERATURE : " + Tstr + " ]")
 					// fmt.Println("[ CELL LIQUID	   : " + Lstr + "  ]")
 					// fmt.Println("============[end]============")
-
 					if (cell[i].Voltage != -1 || cell[i].Temp != -1) && cell[i].Id != 0 {
 						summcell++
 						summvolt += cell[i].Voltage
+						listCellFill[i] = uint(cell[i].Id)
+						if cell[i].Temp != -1 && cell[i].Liquid == 0 {
+							bmsxkcErr[i] = uint(cell[i].Id)
+						}
 					} else {
 						cell_null++
 						listCellNull[i] = uint(cell[i].Id)
-
 					}
 				}
+				fmt.Println("List Cell Filled: ")
+				fmt.Print(listCellFill)
+				fmt.Println("")
+				fmt.Println("==================================")
+
+				fmt.Println("XKC err: ")
+				fmt.Print(bmsxkcErr)
+				fmt.Println("")
+				fmt.Println("==================================")
+				
+				fmt.Println("List Cell NUll: ")
 				fmt.Print(listCellNull)
 				fmt.Println("")
 				fmt.Println("==================================")
@@ -93,7 +110,6 @@ func main() {
 				if sec%30 == 0 {
 					pubsub.Publish_Data(*Topic_pub+"/cells", payload)
 					pubsub.Publish_Data(*Topic_pub+"/summ", c_sum)
-
 				}
 			} //else {
 			// 	printd.Debug(3, "waiting for payload")

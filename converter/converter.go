@@ -19,8 +19,8 @@ func GetCell(p string) (Cell interface{}, err error) {
 			printd.Debug(2, "TS ESP = "+all_c.Timestamp)
 			// printd.Debug(2, "CELL ESP = " + all_c.Cells)
 			// fmt.Println("cn: ", all_c.Cells)
-			
-			for i := 0; i < 6; i++ {
+			ln := len(all_c.Cells)
+			for i := 0; i < ln; i++ {
 				id_x := all_c.Cells[i].Id
 				C[id_x].Id = all_c.Cells[i].Id
 				C[id_x].Voltage = all_c.Cells[i].Voltage
